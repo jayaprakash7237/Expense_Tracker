@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💰 Expense Tracker - Login</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #0c0e1a;
+            position: relative;
+        }
+
+        /* Animated Background - Same as Register */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0c0e1a, #1a0e2e, #0c1a2e);
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            animation: orbMove 20s ease-in-out infinite;
+        }
+
+        .orb:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: rgba(99, 102, 241, 0.08);
+            top: -15%;
+            left: -10%;
+        }
+
+        .orb:nth-child(2) {
+            width: 450px;
+            height: 450px;
+            background: rgba(236, 72, 153, 0.06);
+            bottom: -15%;
+            right: -10%;
+            animation-delay: -6s;
+        }
+
+        .orb:nth-child(3) {
+            width: 350px;
+            height: 350px;
+            background: rgba(52, 211, 153, 0.05);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -12s;
+        }
+
+        @keyframes orbMove {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(50px, -40px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-40px, 30px) scale(0.9);
+            }
+        }
+
+        .symbol {
+            position: absolute;
+            font-size: 60px;
+            opacity: 0.03;
+            animation: floatSymbol 25s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .symbol:nth-child(4) {
+            top: 10%;
+            left: 8%;
+            animation-delay: 0s;
+            font-size: 80px;
+        }
+
+        .symbol:nth-child(5) {
+            top: 20%;
+            right: 12%;
+            animation-delay: -4s;
+            font-size: 100px;
+        }
+
+        .symbol:nth-child(6) {
+            bottom: 25%;
+            left: 5%;
+            animation-delay: -8s;
+            font-size: 70px;
+        }
+
+        .symbol:nth-child(7) {
+            bottom: 15%;
+            right: 8%;
+            animation-delay: -12s;
+            font-size: 90px;
+        }
+
+        .symbol:nth-child(8) {
+            top: 50%;
+            left: 50%;
+            animation-delay: -16s;
+            font-size: 120px;
+            transform: translateX(-50%);
+        }
+
+        @keyframes floatSymbol {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 0.03;
+            }
+
+            50% {
+                transform: translateY(-30px) rotate(10deg) scale(1.05);
+                opacity: 0.06;
+            }
+        }
+
+        .grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.008) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.008) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        /* Login Card - Same as Register */
+        .login-card {
+            position: relative;
+            z-index: 1;
+            max-width: 460px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 40px;
+            padding: 48px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 80px 160px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .login-card:hover {
+            border-color: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .header .icon-wrap {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+            color: #fff;
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.25);
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 .highlight {
+            background: linear-gradient(135deg, #6366f1, #ec4899, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.3);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .input-wrap {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .input-wrap:focus-within {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.04);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.06);
+        }
+
+        .input-wrap .icon {
+            padding: 0 0 0 14px;
+            color: rgba(255, 255, 255, 0.08);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .input-wrap:focus-within .icon {
+            color: #a78bfa;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 14px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 400;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-wrap input::placeholder {
+            color: rgba(255, 255, 255, 0.06);
+            font-weight: 300;
+        }
+
+        .toggle-pass {
+            padding-right: 14px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.08);
+            transition: color 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .toggle-pass:hover {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .hint {
+            margin-top: 4px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hint i {
+            font-size: 9px;
+        }
+
+        .forgot-link {
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .forgot-link a {
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 12px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-link a:hover {
+            color: #a78bfa;
+        }
+
+        /* Submit Button - Same as Register */
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #6366f1, #a78bfa, #ec4899);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            letter-spacing: 0.3px;
+            position: relative;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.3);
+        }
+
+        .login-btn:active {
+            transform: scale(0.97);
+        }
+
+        .login-btn i {
+            margin-right: 10px;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .login-btn .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .login-btn.loading .btn-text {
+            display: none;
+        }
+
+        .login-btn.loading .spinner {
+            display: block;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #a78bfa;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #ec4899;
+        }
+
+        .msg {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 14px;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .msg i {
+            font-size: 16px;
+        }
+
+        .msg.show {
+            display: flex;
+        }
+
+        .msg-success {
+            background: rgba(52, 211, 153, 0.06);
+            border: 1px solid rgba(52, 211, 153, 0.08);
+            color: #34d399;
+        }
+
+        .msg-error {
+            background: rgba(248, 113, 113, 0.06);
+            border: 1px solid rgba(248, 113, 113, 0.08);
+            color: #f87171;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 32px 20px;
+                border-radius: 28px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .header .icon-wrap {
+                width: 52px;
+                height: 52px;
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background -->
+    <div class="bg-layer">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="symbol">$</div>
+        <div class="symbol">€</div>
+        <div class="symbol">£</div>
+        <div class="symbol">¥</div>
+        <div class="symbol">$</div>
+    </div>
+    <div class="grid"></div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+
+        <div class="header">
+            <div class="icon-wrap">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <h1>Welcome <span class="highlight">Back</span></h1>
+            <p>Login to track your expenses</p>
+        </div>
+
+        <form id="loginForm">
+
+            <!-- Username or Email -->
+            <div class="form-group">
+                <label>Username</label>
+                <div class="input-wrap">
+                    <span class="icon"><i class="fas fa-user"></i></span>
+                    <input type="text" id="loginInput" placeholder="Enter username or email" required />
+                </div>
+                <div class="hint">
+                    <i class="fas fa-circle"></i> Use your username or email address
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-wrap">
+                    <span class="icon"><i class="fas fa-lock"></i></span>
+                    <input type="password" id="password" placeholder="••••••••" required />
+                    <span class="toggle-pass" onclick="togglePass()">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </span>
+                </div>
+                <div class="forgot-link">
+                    <a href="#">Forgot Password?</a>
+                </div>
+            </div>
+
+            <!-- Login Button -->
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Login</span>
+                <div class="spinner"></div>
+            </button>
+
+            <div class="msg msg-success" id="successMsg">
+                <i class="fas fa-check-circle"></i>
+                <span id="successText">Login successful! Redirecting...</span>
+            </div>
+
+            <div class="msg msg-error" id="errorMsg">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="errorText">Invalid credentials!</span>
+            </div>
+
+        </form>
+
+        <div class="footer">
+            Don't have an account? <a href="/register">Create one</a>
+        </div>
+
+    </div>
+
+    <script>
+        function togglePass() {
+            const pass = document.getElementById('password');
+            const eye = document.getElementById('eyeIcon');
+            if (pass.type === 'password') {
+                pass.type = 'text';
+                eye.className = 'fas fa-eye-slash';
+            } else {
+                pass.type = 'password';
+                eye.className = 'fas fa-eye';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('loginBtn');
+            const successMsg = document.getElementById('successMsg');
+            const errorMsg = document.getElementById('errorMsg');
+
+            successMsg.classList.remove('show');
+            errorMsg.classList.remove('show');
+
+            const loginInput = document.getElementById('loginInput').value.trim();  // ← username
+            const password = document.getElementById('password').value.trim();
+
+            if (!loginInput || !password) {
+                showError('Please fill in all fields!');
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: loginInput,  // ← ONLY username
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    // Save user_id from response
+                    const userId = result.data.id;
+                    const userName = result.data.name;
+
+                    // Store in localStorage
+                    localStorage.setItem('userId', userId);
+                    localStorage.setItem('userName', userName);
+
+                    showSuccess(result.message);
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 2000);
+                } else {
+                    showError(result.message || 'Invalid credentials!');
+                }
+            } catch (error) {
+                showError('Network error! Please try again.');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+
+        function showSuccess(message) {
+            document.getElementById('successText').textContent = message;
+            document.getElementById('successMsg').classList.add('show');
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMsg').classList.add('show');
+            setTimeout(() => {
+                document.getElementById('errorMsg').classList.remove('show');
+            }, 5000);
+        }
+    </script>
+
+</body>
+
+</html>
