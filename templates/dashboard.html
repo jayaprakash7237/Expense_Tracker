@@ -19,9 +19,94 @@
             background: #0c0e1a;
             min-height: 100vh;
             color: #fff;
+            overflow-x: hidden;
         }
 
-        /* Sidebar */
+        /* ============================
+           LOADING OVERLAY - Minimal
+        ============================ */
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #0c0e1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        #loadingOverlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Simple pulse circle */
+        .loader-pulse {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            animation: pulse 1.2s ease-in-out infinite;
+            box-shadow: 0 0 60px rgba(99, 102, 241, 0.15);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(0.85);
+                opacity: 0.5;
+            }
+        }
+
+        .loader-text {
+            margin-top: 24px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .loader-text span {
+            color: #a78bfa;
+        }
+
+        /* Progress bar */
+        .loader-progress {
+            width: 160px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 4px;
+            margin-top: 16px;
+            overflow: hidden;
+        }
+
+        .loader-progress .bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #a78bfa);
+            border-radius: 4px;
+            animation: progress 2s ease-in-out forwards;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            20% { width: 20%; }
+            40% { width: 45%; }
+            60% { width: 70%; }
+            80% { width: 88%; }
+            100% { width: 100%; }
+        }
+
+        /* ============================
+           SIDEBAR
+        ============================ */
         .sidebar {
             position: fixed;
             left: 0;
@@ -109,14 +194,30 @@
             color: #f87171;
         }
 
-        /* Main Content */
+        /* ============================
+           MAIN CONTENT
+        ============================ */
         .main-content {
             margin-left: 240px;
             padding: 32px 40px 40px 40px;
             min-height: 100vh;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.4s;
         }
 
-        /* Top Bar */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -166,7 +267,9 @@
             font-weight: 500;
         }
 
-        /* Stats Cards */
+        /* ============================
+           STATS CARDS
+        ============================ */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -218,7 +321,6 @@
             margin-top: -8px;
         }
 
-        /* Bottom Grid */
         .bottom-grid {
             display: grid;
             grid-template-columns: 1.4fr 1fr;
@@ -239,7 +341,6 @@
             margin-bottom: 16px;
         }
 
-        /* Bar Chart */
         .bar-chart {
             display: flex;
             align-items: flex-end;
@@ -270,7 +371,6 @@
             color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Transactions */
         .transaction {
             display: flex;
             justify-content: space-between;
@@ -322,7 +422,6 @@
         .transaction .amount.positive { color: #34d399; }
         .transaction .amount.negative { color: #f87171; }
 
-        /* FAB */
         .fab {
             position: fixed;
             bottom: 32px;
@@ -345,7 +444,84 @@
             box-shadow: 0 16px 48px rgba(99, 102, 241, 0.45);
         }
 
-        /* Responsive */
+        .loading-text {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .skeleton-text {
+            height: 28px;
+            width: 80%;
+            margin-top: 6px;
+        }
+
+        .skeleton-change {
+            height: 16px;
+            width: 60%;
+            margin-top: 6px;
+        }
+
+        .skeleton-chart {
+            height: 180px;
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .skeleton-transaction {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .skeleton-transaction .left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .skeleton-transaction .left .circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+        }
+
+        .skeleton-transaction .left .text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .skeleton-transaction .left .text .line1 {
+            height: 14px;
+            width: 120px;
+        }
+
+        .skeleton-transaction .left .text .line2 {
+            height: 12px;
+            width: 80px;
+        }
+
+        .skeleton-transaction .right {
+            height: 14px;
+            width: 60px;
+        }
+
         @media (max-width: 1024px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -372,18 +548,24 @@
                 gap: 12px;
             }
         }
-
-        .loading-text {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 14px;
-            text-align: center;
-            padding: 20px 0;
-        }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
+    <!-- ============================
+    LOADING OVERLAY - Minimal
+    ============================ -->
+    <div id="loadingOverlay">
+        <div class="loader-pulse"></div>
+        <div class="loader-text">Loading <span>Dashboard</span></div>
+        <div class="loader-progress">
+            <div class="bar"></div>
+        </div>
+    </div>
+
+    <!-- ============================
+    SIDEBAR
+    ============================ -->
     <div class="sidebar">
         <div class="logo">
             <div class="icon"><i class="fas fa-wallet"></i></div>
@@ -398,10 +580,11 @@
         </ul>
     </div>
 
-    <!-- Main Content -->
+    <!-- ============================
+    MAIN CONTENT
+    ============================ -->
     <div class="main-content">
 
-        <!-- Top Bar -->
         <div class="top-bar">
             <div class="greeting">
                 <h1>Good Morning, <span id="userName">User</span></h1>
@@ -418,45 +601,108 @@
             <div class="stat-card">
                 <div class="icon"><i class="fas fa-coins"></i></div>
                 <div class="label">Total Expenses</div>
-                <div class="value" id="totalExpenses">₹0</div>
-                <div class="change positive"><i class="fas fa-arrow-up"></i> Loading...</div>
+                <div class="value" id="totalExpenses">
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+                <div class="change" id="totalChange">
+                    <div class="skeleton skeleton-change"></div>
+                </div>
             </div>
             <div class="stat-card">
                 <div class="icon"><i class="fas fa-trend-up"></i></div>
                 <div class="label">This Month</div>
-                <div class="value" id="thisMonth">₹0</div>
-                <div class="change positive"><i class="fas fa-arrow-up"></i> Loading...</div>
+                <div class="value" id="thisMonth">
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+                <div class="change" id="monthChange">
+                    <div class="skeleton skeleton-change"></div>
+                </div>
             </div>
             <div class="stat-card">
                 <div class="icon"><i class="fas fa-wallet"></i></div>
                 <div class="label">Remaining Budget</div>
-                <div class="value" id="remainingBudget">₹0</div>
-                <div class="change positive"><i class="fas fa-arrow-up"></i> Loading...</div>
+                <div class="value" id="remainingBudget">
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+                <div class="change" id="budgetChange">
+                    <div class="skeleton skeleton-change"></div>
+                </div>
             </div>
             <div class="stat-card">
                 <div class="icon"><i class="fas fa-calendar"></i></div>
                 <div class="label">Transactions</div>
-                <div class="value" id="transactions">0</div>
-                <div class="change positive"><i class="fas fa-arrow-up"></i> Loading...</div>
+                <div class="value" id="transactions">
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+                <div class="change" id="transactionChange">
+                    <div class="skeleton skeleton-change"></div>
+                </div>
             </div>
         </div>
 
         <!-- Bottom Grid -->
         <div class="bottom-grid">
 
-            <!-- Chart -->
             <div class="chart-box">
                 <div class="title">📊 Weekly Spending</div>
-                <div class="bar-chart" id="barChart">
-                    <div class="loading-text">Loading chart...</div>
+                <div id="chartContainer">
+                    <div class="skeleton skeleton-chart"></div>
                 </div>
             </div>
 
-            <!-- Recent Transactions -->
             <div class="recent-box">
                 <div class="title">🕒 Recent Transactions</div>
                 <div id="recentTransactions">
-                    <div class="loading-text">Loading transactions...</div>
+                    <div class="skeleton-transaction">
+                        <div class="left">
+                            <div class="skeleton circle"></div>
+                            <div class="text">
+                                <div class="skeleton line1"></div>
+                                <div class="skeleton line2"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton right"></div>
+                    </div>
+                    <div class="skeleton-transaction">
+                        <div class="left">
+                            <div class="skeleton circle"></div>
+                            <div class="text">
+                                <div class="skeleton line1"></div>
+                                <div class="skeleton line2"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton right"></div>
+                    </div>
+                    <div class="skeleton-transaction">
+                        <div class="left">
+                            <div class="skeleton circle"></div>
+                            <div class="text">
+                                <div class="skeleton line1"></div>
+                                <div class="skeleton line2"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton right"></div>
+                    </div>
+                    <div class="skeleton-transaction">
+                        <div class="left">
+                            <div class="skeleton circle"></div>
+                            <div class="text">
+                                <div class="skeleton line1"></div>
+                                <div class="skeleton line2"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton right"></div>
+                    </div>
+                    <div class="skeleton-transaction">
+                        <div class="left">
+                            <div class="skeleton circle"></div>
+                            <div class="text">
+                                <div class="skeleton line1"></div>
+                                <div class="skeleton line2"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton right"></div>
+                    </div>
                 </div>
             </div>
 
@@ -464,14 +710,19 @@
 
     </div>
 
-    <!-- FAB -->
     <button class="fab" onclick="alert('Add Expense Coming Soon! 🚀')">
         <i class="fas fa-plus"></i>
     </button>
 
     <script>
         // ============================
-        // 1. Get userId from localStorage
+        // 1. Show Loading Overlay
+        // ============================
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const minLoadingTime = 2000;
+
+        // ============================
+        // 2. Get userId
         // ============================
         const userId = localStorage.getItem('userId');
         const userName = localStorage.getItem('userName');
@@ -481,13 +732,12 @@
             window.location.href = '/login';
         }
 
-        // Show user name
         document.getElementById('userName').textContent = userName || 'User';
         document.getElementById('userNameTop').textContent = userName || 'User';
         document.getElementById('userAvatar').textContent = (userName || 'U')[0].toUpperCase();
 
         // ============================
-        // 2. Fetch Stats
+        // 3. Load Data
         // ============================
         async function loadStats() {
             try {
@@ -502,31 +752,34 @@
                 if (result.status === 'success') {
                     const data = result.data;
 
-                    document.getElementById('totalExpenses').textContent = '₹' + data.totalExpenses;
-                    document.getElementById('thisMonth').textContent = '₹' + data.thisMonth;
-                    document.getElementById('remainingBudget').textContent = '₹' + data.remainingBudget;
-                    document.getElementById('transactions').textContent = data.transactions;
+                    document.getElementById('totalExpenses').innerHTML = '₹' + data.totalExpenses;
+                    document.getElementById('thisMonth').innerHTML = '₹' + data.thisMonth;
+                    document.getElementById('remainingBudget').innerHTML = '₹' + data.remainingBudget;
+                    document.getElementById('transactions').innerHTML = data.transactions;
 
-                    // Update change indicators
-                    const changes = document.querySelectorAll('.stat-card .change');
                     if (data.monthlyChangeType === 'positive') {
-                        changes[0].className = 'change positive';
-                        changes[0].innerHTML = '<i class="fas fa-arrow-up"></i> ' + data.monthlyChange + '% from last month';
+                        document.getElementById('totalChange').className = 'change positive';
+                        document.getElementById('totalChange').innerHTML = '<i class="fas fa-arrow-up"></i> ' + data.monthlyChange + '% from last month';
                     } else {
-                        changes[0].className = 'change negative';
-                        changes[0].innerHTML = '<i class="fas fa-arrow-down"></i> ' + Math.abs(data.monthlyChange) + '% from last month';
+                        document.getElementById('totalChange').className = 'change negative';
+                        document.getElementById('totalChange').innerHTML = '<i class="fas fa-arrow-down"></i> ' + Math.abs(data.monthlyChange) + '% from last month';
                     }
-                } else {
-                    console.error('Stats error:', result.message);
+
+                    document.getElementById('monthChange').className = 'change positive';
+                    document.getElementById('monthChange').innerHTML = '<i class="fas fa-arrow-up"></i> Current month';
+                    document.getElementById('budgetChange').className = 'change positive';
+                    document.getElementById('budgetChange').innerHTML = '<i class="fas fa-arrow-up"></i> Budget remaining';
+                    document.getElementById('transactionChange').className = 'change positive';
+                    document.getElementById('transactionChange').innerHTML = '<i class="fas fa-arrow-up"></i> Total transactions';
+
+                    hideLoading();
                 }
             } catch (error) {
                 console.error('Error loading stats:', error);
+                hideLoading();
             }
         }
 
-        // ============================
-        // 3. Fetch Chart Data
-        // ============================
         async function loadChart() {
             try {
                 const response = await fetch('/api/dashboard/chart', {
@@ -536,15 +789,13 @@
                 });
 
                 const result = await response.json();
+                const container = document.getElementById('chartContainer');
 
                 if (result.status === 'success') {
                     const chartData = result.data;
-                    const barChart = document.getElementById('barChart');
-
                     if (chartData.labels && chartData.labels.length > 0) {
-                        let html = '';
+                        let html = '<div class="bar-chart">';
                         const maxValue = Math.max(...chartData.data, 1);
-
                         for (let i = 0; i < chartData.labels.length; i++) {
                             const height = (chartData.data[i] / maxValue) * 150;
                             html += `
@@ -554,9 +805,10 @@
                                 </div>
                             `;
                         }
-                        barChart.innerHTML = html;
+                        html += '</div>';
+                        container.innerHTML = html;
                     } else {
-                        barChart.innerHTML = '<div class="loading-text">No data available</div>';
+                        container.innerHTML = '<div class="loading-text">No data available</div>';
                     }
                 }
             } catch (error) {
@@ -564,9 +816,6 @@
             }
         }
 
-        // ============================
-        // 4. Fetch Recent Transactions
-        // ============================
         async function loadRecentTransactions() {
             try {
                 const response = await fetch('/api/dashboard/recent', {
@@ -576,11 +825,10 @@
                 });
 
                 const result = await response.json();
+                const container = document.getElementById('recentTransactions');
 
                 if (result.status === 'success') {
                     const transactions = result.data;
-                    const container = document.getElementById('recentTransactions');
-
                     if (transactions && transactions.length > 0) {
                         let html = '';
                         transactions.forEach(t => {
@@ -603,7 +851,7 @@
                         });
                         container.innerHTML = html;
                     } else {
-                        container.innerHTML = '<div class="loading-text">No transactions yet</div>';
+                        container.innerHTML = '<div class="loading-text">No transactions</div>';
                     }
                 }
             } catch (error) {
@@ -620,6 +868,20 @@
                 'shopping': 'fa-shopping-bag'
             };
             return map[icon] || 'fa-circle';
+        }
+
+        // ============================
+        // 4. Hide Loading
+        // ============================
+        let startTime = Date.now();
+
+        function hideLoading() {
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, minLoadingTime - elapsed);
+
+            setTimeout(() => {
+                loadingOverlay.classList.add('hidden');
+            }, remaining);
         }
 
         // ============================
