@@ -828,27 +828,33 @@
             <div class="stat-card">
                 <div class="icon"><i class="fas fa-trend-up"></i></div>
                 <div class="label">This Month</div>
-                <div class="value" id="thisMonth">₹0</div>
-                <div class="change positive" id="monthChange">
-                    <i class="fas fa-arrow-up"></i> Current month
+                <div class="value" id="thisMonth">
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+                <div class="change" id="monthChange">
+                    <div class="skeleton skeleton-change"></div>
                 </div>
             </div>
 
             <div class="stat-card">
                 <div class="icon"><i class="fas fa-wallet"></i></div>
                 <div class="label">Remaining Budget</div>
-                <div class="value" id="remainingBudget">₹0</div>
-                <div class="change positive" id="budgetChange">
-                    <i class="fas fa-arrow-up"></i> Budget remaining
+                <div class="value" id="remainingBudget">
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+                <div class="change" id="budgetChange">
+                    <div class="skeleton skeleton-change"></div>
                 </div>
             </div>
 
             <div class="stat-card">
                 <div class="icon"><i class="fas fa-calendar"></i></div>
                 <div class="label">Transactions</div>
-                <div class="value" id="transactions">0</div>
-                <div class="change positive" id="transactionChange">
-                    <i class="fas fa-arrow-up"></i> Total transactions
+                <div class="value" id="transactions">
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+                <div class="change" id="transactionChange">
+                    <div class="skeleton skeleton-change"></div>
                 </div>
             </div>
         </div>
@@ -927,311 +933,340 @@
         <i class="fas fa-plus"></i>
     </button>
 
-<script>
-    // ============================
-    // 1. LOADING OVERLAY
-    // ============================
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const minLoadingTime = 2000;
-    let startTime = Date.now();
+    <script>
+        // ============================
+        // 1. LOADING OVERLAY
+        // ============================
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const minLoadingTime = 2000;
+        let startTime = Date.now();
 
-    function hideLoading() {
-        const elapsed = Date.now() - startTime;
-        const remaining = Math.max(0, minLoadingTime - elapsed);
-        setTimeout(() => {
-            loadingOverlay.classList.add('hidden');
-        }, remaining);
-    }
+        function hideLoading() {
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.max(0, minLoadingTime - elapsed);
+            setTimeout(() => {
+                loadingOverlay.classList.add('hidden');
+            }, remaining);
+        }
 
-    // ============================
-    // 2. GET USER ID
-    // ============================
-    const userId = localStorage.getItem('userId');
-    const userName = localStorage.getItem('userName');
+        // ============================
+        // 2. GET USER ID
+        // ============================
+        const userId = localStorage.getItem('userId');
+        const userName = localStorage.getItem('userName');
 
-    if (!userId) {
-        alert('Please login first!');
-        window.location.href = '/login';
-    }
+        if (!userId) {
+            alert('Please login first!');
+            window.location.href = '/login';
+        }
 
-    document.getElementById('userName').textContent = userName || 'User';
-    document.getElementById('userNameTop').textContent = userName || 'User';
-    document.getElementById('userAvatar').textContent = (userName || 'U')[0].toUpperCase();
+        document.getElementById('userName').textContent = userName || 'User';
+        document.getElementById('userNameTop').textContent = userName || 'User';
+        document.getElementById('userAvatar').textContent = (userName || 'U')[0].toUpperCase();
 
-    // ============================
-    // 3. HELPER FUNCTION - LOCAL DATE FORMAT
-    // ============================
-    function formatLocalDate(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return year + '-' + month + '-' + day;
-    }
+        // ============================
+        // 3. HELPER FUNCTION - LOCAL DATE FORMAT
+        // ============================
+        function formatLocalDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        }
 
-    // ============================
-    // 4. DATE FILTER - DEFAULT CURRENT MONTH (1st to Today)
-    // ============================
-    let currentStartDate = '';
-    let currentEndDate = '';
+        // ============================
+        // 4. DATE FILTER - DEFAULT CURRENT MONTH (1st to Today)
+        // ============================
+        let currentStartDate = '';
+        let currentEndDate = '';
 
-    function setDefaultDates() {
-        const today = new Date();
-        // ✅ Get current month's first day
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        function setDefaultDates() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
 
-        document.getElementById('startDate').value = formatLocalDate(firstDay);
-        document.getElementById('endDate').value = formatLocalDate(today);
+            document.getElementById('startDate').value = formatLocalDate(firstDay);
+            document.getElementById('endDate').value = formatLocalDate(today);
 
-        currentStartDate = document.getElementById('startDate').value;
-        currentEndDate = document.getElementById('endDate').value;
+            currentStartDate = document.getElementById('startDate').value;
+            currentEndDate = document.getElementById('endDate').value;
 
-        const start = firstDay.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const end = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        document.getElementById('dateRangeText').textContent = start + ' — ' + end;
+            const start = firstDay.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const end = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            document.getElementById('dateRangeText').textContent = start + ' — ' + end;
 
-        document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
-    }
+            document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
+        }
 
-    // ============================
-    // 5. QUICK FILTER
-    // ============================
-    function setQuickFilter(days) {
-        const today = new Date();
-        const pastDate = new Date(today);
-        pastDate.setDate(today.getDate() - days);
+        // ============================
+        // 5. QUICK FILTER
+        // ============================
+        function setQuickFilter(days) {
+            const today = new Date();
+            const pastDate = new Date(today);
+            pastDate.setDate(today.getDate() - days);
 
-        document.getElementById('startDate').value = formatLocalDate(pastDate);
-        document.getElementById('endDate').value = formatLocalDate(today);
+            document.getElementById('startDate').value = formatLocalDate(pastDate);
+            document.getElementById('endDate').value = formatLocalDate(today);
 
-        currentStartDate = document.getElementById('startDate').value;
-        currentEndDate = document.getElementById('endDate').value;
+            currentStartDate = document.getElementById('startDate').value;
+            currentEndDate = document.getElementById('endDate').value;
 
-        const start = pastDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const end = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        document.getElementById('dateRangeText').textContent = start + ' — ' + end;
+            const start = pastDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const end = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            document.getElementById('dateRangeText').textContent = start + ' — ' + end;
 
-        document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
-        event.target.classList.add('active');
+            document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
 
-        document.getElementById('totalExpenses').innerHTML = '<div class="skeleton skeleton-text"></div>';
-        document.getElementById('totalChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
-        document.getElementById('chartContainer').innerHTML = '<div class="skeleton skeleton-chart"></div>';
+            // Show skeleton while loading
+            document.getElementById('totalExpenses').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('totalChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('thisMonth').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('monthChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('remainingBudget').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('budgetChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('transactions').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('transactionChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('chartContainer').innerHTML = '<div class="skeleton skeleton-chart"></div>';
 
-        loadAllData(currentStartDate, currentEndDate);
-    }
+            loadAllData(currentStartDate, currentEndDate);
+        }
 
-    setDefaultDates();
+        setDefaultDates();
 
-    // ============================
-    // 6. LOAD FUNCTIONS
-    // ============================
-    function loadAllData(startDate, endDate) {
-        loadStats(startDate, endDate);
-        loadChart(startDate, endDate);
-        loadRecentTransactions(startDate, endDate);
-    }
+        // ============================
+        // 6. LOAD FUNCTIONS
+        // ============================
+        function loadAllData(startDate, endDate) {
+            loadStats(startDate, endDate);
+            loadChart(startDate, endDate);
+            loadRecentTransactions(startDate, endDate);
+        }
 
-    // ============================
-    // 7. API CALLS
-    // ============================
-    async function loadStats(startDate, endDate) {
-        try {
-            const body = { user_id: parseInt(userId) };
-            if (startDate) body.start_date = startDate;
-            if (endDate) body.end_date = endDate;
+        // ============================
+        // 7. API CALLS
+        // ============================
+        async function loadStats(startDate, endDate) {
+            try {
+                const body = { user_id: parseInt(userId) };
+                if (startDate) body.start_date = startDate;
+                if (endDate) body.end_date = endDate;
 
-            const response = await fetch('/api/dashboard/stats', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
+                const response = await fetch('/api/dashboard/stats', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
 
-            const result = await response.json();
+                const result = await response.json();
 
-            if (result.status === 'success') {
-                const data = result.data;
+                if (result.status === 'success') {
+                    const data = result.data;
 
-                document.getElementById('totalExpenses').innerHTML = '₹' + data.totalExpenses;
-                if (data.monthlyChangeType === 'positive') {
-                    document.getElementById('totalChange').className = 'change negative';
-                    document.getElementById('totalChange').innerHTML = '<i class="fas fa-arrow-up"></i> ' + data.monthlyChange + '% from last month';
+                    // Update Total Expenses
+                    document.getElementById('totalExpenses').innerHTML = '₹' + data.totalExpenses;
+                    if (data.monthlyChangeType === 'positive') {
+                        document.getElementById('totalChange').className = 'change positive';
+                        document.getElementById('totalChange').innerHTML = '<i class="fas fa-arrow-up"></i> ' + data.monthlyChange + '% from last month';
+                    } else {
+                        document.getElementById('totalChange').className = 'change negative';
+                        document.getElementById('totalChange').innerHTML = '<i class="fas fa-arrow-down"></i> ' + Math.abs(data.monthlyChange) + '% from last month';
+                    }
+
+                    // This Month
+                    document.getElementById('thisMonth').innerHTML = '₹' + data.thisMonth;
+                    document.getElementById('monthChange').className = 'change positive';
+                    document.getElementById('monthChange').innerHTML = '<i class="fas fa-arrow-up"></i> Current month';
+
+                    // Remaining Budget
+                    document.getElementById('remainingBudget').innerHTML = '₹' + data.remainingBudget;
+                    document.getElementById('budgetChange').className = 'change positive';
+                    document.getElementById('budgetChange').innerHTML = '<i class="fas fa-arrow-up"></i> Budget remaining';
+
+                    // Transactions
+                    document.getElementById('transactions').innerHTML = data.transactions;
+                    document.getElementById('transactionChange').className = 'change positive';
+                    document.getElementById('transactionChange').innerHTML = '<i class="fas fa-arrow-up"></i> Total transactions';
+
+                    hideLoading();
                 } else {
-                    document.getElementById('totalChange').className = 'change positive';
-                    document.getElementById('totalChange').innerHTML = '<i class="fas fa-arrow-down"></i> ' + Math.abs(data.monthlyChange) + '% from last month';
+                    hideLoading();
                 }
-
-                document.getElementById('thisMonth').innerHTML = '₹' + data.thisMonth;
-                document.getElementById('monthChange').innerHTML = '<i class="fas fa-arrow-up"></i> Current month';
-
-                document.getElementById('remainingBudget').innerHTML = '₹' + data.remainingBudget;
-                document.getElementById('budgetChange').innerHTML = '<i class="fas fa-arrow-up"></i> Budget remaining';
-
-                document.getElementById('transactions').innerHTML = data.transactions;
-                document.getElementById('transactionChange').innerHTML = '<i class="fas fa-arrow-up"></i> Total transactions';
-
+            } catch (error) {
+                console.error('Error loading stats:', error);
                 hideLoading();
             }
-        } catch (error) {
-            console.error('Error loading stats:', error);
-            hideLoading();
         }
-    }
 
-    async function loadChart(startDate, endDate) {
-        try {
-            const body = { user_id: parseInt(userId) };
-            if (startDate) body.start_date = startDate;
-            if (endDate) body.end_date = endDate;
+        async function loadChart(startDate, endDate) {
+            try {
+                const body = { user_id: parseInt(userId) };
+                if (startDate) body.start_date = startDate;
+                if (endDate) body.end_date = endDate;
 
-            const response = await fetch('/api/dashboard/chart', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
+                const response = await fetch('/api/dashboard/chart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
 
-            const result = await response.json();
-            const container = document.getElementById('chartContainer');
+                const result = await response.json();
+                const container = document.getElementById('chartContainer');
 
-            if (result.status === 'success') {
-                const data = result.data;
-                if (data.labels && data.labels.length > 0) {
-                    let html = '<div class="bar-chart">';
-                    const maxValue = Math.max(...data.data, 1);
-                    for (let i = 0; i < data.labels.length; i++) {
-                        const height = (data.data[i] / maxValue) * 150;
-                        html += `
-                            <div class="bar-item">
-                                <div class="bar" style="height: ${Math.max(height, 10)}px;"></div>
-                                <span class="bar-label">${data.labels[i]}</span>
-                            </div>
-                        `;
-                    }
-                    html += '</div>';
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = '<div class="loading-text">No data available</div>';
-                }
-            }
-        } catch (error) {
-            console.error('Error loading chart:', error);
-        }
-    }
-
-    async function loadRecentTransactions(startDate, endDate) {
-        try {
-            const body = { user_id: parseInt(userId) };
-            if (startDate) body.start_date = startDate;
-            if (endDate) body.end_date = endDate;
-
-            const response = await fetch('/api/dashboard/recent', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-
-            const result = await response.json();
-            const container = document.getElementById('recentTransactions');
-
-            if (result.status === 'success') {
-                const transactions = result.data;
-                if (transactions && transactions.length > 0) {
-                    let html = '';
-                    transactions.forEach(t => {
-                        const amountClass = t.type === 'income' ? 'positive' : 'negative';
-                        const sign = t.type === 'income' ? '+' : '-';
-                        html += `
-                            <div class="transaction">
-                                <div class="left">
-                                    <div class="icon-circle ${t.icon}">
-                                        <i class="fas ${getIconClass(t.icon)}"></i>
-                                    </div>
-                                    <div class="info">
-                                        <div class="title">${t.description}</div>
-                                        <div class="sub">${t.date}</div>
-                                    </div>
+                if (result.status === 'success') {
+                    const data = result.data;
+                    if (data.labels && data.labels.length > 0) {
+                        let html = '<div class="bar-chart">';
+                        const maxValue = Math.max(...data.data, 1);
+                        for (let i = 0; i < data.labels.length; i++) {
+                            const height = (data.data[i] / maxValue) * 150;
+                            html += `
+                                <div class="bar-item">
+                                    <div class="bar" style="height: ${Math.max(height, 10)}px;"></div>
+                                    <span class="bar-label">${data.labels[i]}</span>
                                 </div>
-                                <div class="amount ${amountClass}">${sign}₹${t.amount}</div>
-                            </div>
-                        `;
-                    });
-                    container.innerHTML = html;
-                } else {
-                    container.innerHTML = '<div class="loading-text">No transactions</div>';
+                            `;
+                        }
+                        html += '</div>';
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div class="loading-text">No data available</div>';
+                    }
                 }
+            } catch (error) {
+                console.error('Error loading chart:', error);
             }
-        } catch (error) {
-            console.error('Error loading transactions:', error);
-        }
-    }
-
-    function getIconClass(icon) {
-        const map = {
-            'food': 'fa-utensils',
-            'bills': 'fa-bolt',
-            'expense': 'fa-shopping-bag',
-            'income': 'fa-arrow-right',
-            'shopping': 'fa-shopping-bag'
-        };
-        return map[icon] || 'fa-circle';
-    }
-
-    // ============================
-    // 8. APPLY / RESET FILTER
-    // ============================
-    function applyFilter() {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-
-        if (!startDate || !endDate) {
-            alert('Please select both dates');
-            return;
-        }
-        if (startDate > endDate) {
-            alert('Start date cannot be after end date');
-            return;
         }
 
-        currentStartDate = startDate;
-        currentEndDate = endDate;
+        async function loadRecentTransactions(startDate, endDate) {
+            try {
+                const body = { user_id: parseInt(userId) };
+                if (startDate) body.start_date = startDate;
+                if (endDate) body.end_date = endDate;
 
-        document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
+                const response = await fetch('/api/dashboard/recent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
 
-        const start = new Date(startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const end = new Date(endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        document.getElementById('dateRangeText').textContent = start + ' — ' + end;
+                const result = await response.json();
+                const container = document.getElementById('recentTransactions');
 
-        document.getElementById('totalExpenses').innerHTML = '<div class="skeleton skeleton-text"></div>';
-        document.getElementById('totalChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
-        document.getElementById('chartContainer').innerHTML = '<div class="skeleton skeleton-chart"></div>';
+                if (result.status === 'success') {
+                    const transactions = result.data;
+                    if (transactions && transactions.length > 0) {
+                        let html = '';
+                        transactions.forEach(t => {
+                            const amountClass = t.type === 'income' ? 'positive' : 'negative';
+                            const sign = t.type === 'income' ? '+' : '-';
+                            html += `
+                                <div class="transaction">
+                                    <div class="left">
+                                        <div class="icon-circle ${t.icon}">
+                                            <i class="fas ${getIconClass(t.icon)}"></i>
+                                        </div>
+                                        <div class="info">
+                                            <div class="title">${t.description}</div>
+                                            <div class="sub">${t.date}</div>
+                                        </div>
+                                    </div>
+                                    <div class="amount ${amountClass}">${sign}₹${t.amount}</div>
+                                </div>
+                            `;
+                        });
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = '<div class="loading-text">No transactions</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+            }
+        }
 
-        loadAllData(startDate, endDate);
-    }
+        function getIconClass(icon) {
+            const map = {
+                'food': 'fa-utensils',
+                'bills': 'fa-bolt',
+                'expense': 'fa-shopping-bag',
+                'income': 'fa-arrow-right',
+                'shopping': 'fa-shopping-bag'
+            };
+            return map[icon] || 'fa-circle';
+        }
 
-    function resetFilter() {
-        setDefaultDates();
-        document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
+        // ============================
+        // 8. APPLY / RESET FILTER
+        // ============================
+        function applyFilter() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
 
-        document.getElementById('totalExpenses').innerHTML = '<div class="skeleton skeleton-text"></div>';
-        document.getElementById('totalChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
-        document.getElementById('chartContainer').innerHTML = '<div class="skeleton skeleton-chart"></div>';
+            if (!startDate || !endDate) {
+                alert('Please select both dates');
+                return;
+            }
+            if (startDate > endDate) {
+                alert('Start date cannot be after end date');
+                return;
+            }
 
+            currentStartDate = startDate;
+            currentEndDate = endDate;
+
+            document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
+
+            const start = new Date(startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const end = new Date(endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            document.getElementById('dateRangeText').textContent = start + ' — ' + end;
+
+            // Show skeleton while loading
+            document.getElementById('totalExpenses').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('totalChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('thisMonth').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('monthChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('remainingBudget').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('budgetChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('transactions').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('transactionChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('chartContainer').innerHTML = '<div class="skeleton skeleton-chart"></div>';
+
+            loadAllData(startDate, endDate);
+        }
+
+        function resetFilter() {
+            setDefaultDates();
+            document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
+
+            // Show skeleton while loading
+            document.getElementById('totalExpenses').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('totalChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('thisMonth').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('monthChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('remainingBudget').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('budgetChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('transactions').innerHTML = '<div class="skeleton skeleton-text"></div>';
+            document.getElementById('transactionChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+            document.getElementById('chartContainer').innerHTML = '<div class="skeleton skeleton-chart"></div>';
+
+            loadAllData(currentStartDate, currentEndDate);
+        }
+
+        // ============================
+        // 9. LOGOUT
+        // ============================
+        function logout() {
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            window.location.href = '/login';
+        }
+
+        // ============================
+        // 10. INITIAL LOAD
+        // ============================
         loadAllData(currentStartDate, currentEndDate);
-    }
-
-    // ============================
-    // 9. LOGOUT
-    // ============================
-    function logout() {
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userName');
-        window.location.href = '/login';
-    }
-
-    // ============================
-    // 10. INITIAL LOAD
-    // ============================
-    loadAllData(currentStartDate, currentEndDate);
-</script>
+    </script>
 
 </body>
 
