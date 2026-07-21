@@ -257,7 +257,9 @@ func handleStats(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		UserID int `json:"user_id"`
+		UserID    int    `json:"user_id"`
+		StartDate string `json:"start_date,omitempty"`
+		EndDate   string `json:"end_date,omitempty"`
 	}
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil || req.UserID == 0 {
@@ -267,36 +269,132 @@ func handleStats(w http.ResponseWriter, r *http.Request) {
 
 	var stats Stats
 
-	// Total Expenses
-	db.QueryRow("SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE user_id = $1", req.UserID).Scan(&stats.TotalExpenses)
+	// ============================
+	// 1. Total Expenses (with date filter)
+	// ============================
+	query := "SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE user_id = $1"
+	args := []interface{}{req.UserID}
+	argIndex := 2
 
-	// This Month
-	db.QueryRow(`
-        SELECT COALESCE(SUM(amount), 0) 
-        FROM expenses 
-        WHERE user_id = $1 
-        AND EXTRACT(MONTH FROM date) = EXTRACT(MONTH FROM CURRENT_DATE)
-        AND EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM CURRENT_DATE)
-    `, req.UserID).Scan(&stats.ThisMonth)
+	if req.StartDate != "" && req.EndDate != "" {
+		query += fmt.Sprintf(" AND date >= $%d AND date <= $%d", argIndex, argIndex+1)
+		args = append(args, req.StartDate, req.EndDate)
+	}
 
-	// Transactions Count
-	db.QueryRow("SELECT COUNT(*) FROM expenses WHERE user_id = $1", req.UserID).Scan(&stats.Transactions)
+	err = db.QueryRow(query, args...).Scan(&stats.TotalExpenses)
+	if err != nil {
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Database error"})
+		return
+	}
 
-	// Remaining Budget (Budget = 30000)
+	// ============================
+	// 2. This Month (current month - no filter)
+	// ============================
+	err = db.QueryRow(`
+		SELECT COALESCE(SUM(amount), 0) 
+		FROM expenses 
+		WHERE user_id = $1 
+		AND EXTRACT(MONTH FROM date) = EXTRACT(MONTH FROM CURRENT_DATE)
+		AND EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM CURRENT_DATE)
+	`, req.UserID).Scan(&stats.ThisMonth)
+	if err != nil {
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Database error"})
+		return
+	}
+
+	// ============================
+	// 3. Transactions Count (with date filter)
+	// ============================
+	countQuery := "SELECT COUNT(*) FROM expenses WHERE user_id = $1"
+	argsCount := []interface{}{req.UserID}
+	argIndexCount := 2
+
+	if req.StartDate != "" && req.EndDate != "" {
+		countQuery += fmt.Sprintf(" AND date >= $%d AND date <= $%d", argIndexCount, argIndexCount+1)
+		argsCount = append(argsCount, req.StartDate, req.EndDate)
+	}
+
+	err = db.QueryRow(countQuery, argsCount...).Scan(&stats.Transactions)
+	if err != nil {
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Database error"})
+		return
+	}
+
+	// ============================
+	// 4. Remaining Budget
+	// ============================
 	budget := 30000.00
 	stats.RemainingBudget = budget - stats.TotalExpenses
 
-	// Monthly Change (simplified)
-	stats.MonthlyChange = 12
-	stats.MonthlyChangeType = "positive"
+	// ============================
+	// 5. Monthly Change (Total Expenses - last month vs this month)
+	// ============================
+	if req.StartDate != "" && req.EndDate != "" {
+		currentTotal := stats.TotalExpenses
 
-	fmt.Println(stats)
+		startDate, _ := time.Parse("2006-01-02", req.StartDate)
+		endDate, _ := time.Parse("2006-01-02", req.EndDate)
+		duration := endDate.Sub(startDate)
+
+		prevStart := startDate.Add(-duration - 24*time.Hour).Format("2006-01-02")
+		prevEnd := startDate.Add(-24 * time.Hour).Format("2006-01-02")
+
+		var prevTotal float64
+		prevQuery := "SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE user_id = $1 AND date >= $2 AND date <= $3"
+		err = db.QueryRow(prevQuery, req.UserID, prevStart, prevEnd).Scan(&prevTotal)
+		if err != nil {
+			prevTotal = 0
+		}
+
+		if prevTotal > 0 {
+			change := ((currentTotal - prevTotal) / prevTotal) * 100
+			stats.MonthlyChange = change
+			if change >= 0 {
+				stats.MonthlyChangeType = "positive"
+			} else {
+				stats.MonthlyChangeType = "negative"
+			}
+		} else {
+			stats.MonthlyChange = 0
+			stats.MonthlyChangeType = "neutral"
+		}
+	} else {
+		var thisMonthTotal, lastMonthTotal float64
+
+		db.QueryRow(`
+			SELECT COALESCE(SUM(amount), 0) 
+			FROM expenses 
+			WHERE user_id = $1 
+			AND EXTRACT(MONTH FROM date) = EXTRACT(MONTH FROM CURRENT_DATE)
+			AND EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM CURRENT_DATE)
+		`, req.UserID).Scan(&thisMonthTotal)
+
+		db.QueryRow(`
+			SELECT COALESCE(SUM(amount), 0) 
+			FROM expenses 
+			WHERE user_id = $1 
+			AND EXTRACT(MONTH FROM date) = EXTRACT(MONTH FROM CURRENT_DATE) - 1
+			AND EXTRACT(YEAR FROM date) = EXTRACT(YEAR FROM CURRENT_DATE)
+		`, req.UserID).Scan(&lastMonthTotal)
+
+		if lastMonthTotal > 0 {
+			change := ((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100
+			stats.MonthlyChange = change
+			if change >= 0 {
+				stats.MonthlyChangeType = "positive"
+			} else {
+				stats.MonthlyChangeType = "negative"
+			}
+		} else {
+			stats.MonthlyChange = 0
+			stats.MonthlyChangeType = "neutral"
+		}
+	}
 
 	json.NewEncoder(w).Encode(APIResponse{
 		Status: "success",
 		Data:   stats,
 	})
-
 }
 
 func handleRecent(w http.ResponseWriter, r *http.Request) {
@@ -334,7 +432,7 @@ func handleRecent(w http.ResponseWriter, r *http.Request) {
 		t.Icon = getIcon(t.Category)
 		transactions = append(transactions, t)
 	}
-	fmt.Println(transactions)
+	// fmt.Println(transactions)
 	json.NewEncoder(w).Encode(APIResponse{
 		Status: "success",
 		Data:   transactions,
@@ -402,7 +500,7 @@ func handleChart(w http.ResponseWriter, r *http.Request) {
 		chartData.Labels = []string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}
 		chartData.Data = []int{0, 0, 0, 0, 0, 0, 0}
 	}
-	fmt.Println(chartData)
+	// fmt.Println(chartData)
 	json.NewEncoder(w).Encode(APIResponse{
 		Status: "success",
 		Data:   chartData,

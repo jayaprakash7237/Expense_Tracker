@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>💰 Expense Tracker - Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
     <style>
         * {
@@ -22,9 +24,6 @@
             overflow-x: hidden;
         }
 
-        /* ============================
-           LOADING OVERLAY - Minimal
-        ============================ */
         #loadingOverlay {
             position: fixed;
             inset: 0;
@@ -43,7 +42,6 @@
             pointer-events: none;
         }
 
-        /* Simple pulse circle */
         .loader-pulse {
             width: 64px;
             height: 64px;
@@ -54,7 +52,8 @@
         }
 
         @keyframes pulse {
-            0%, 100% {
+            0%,
+            100% {
                 transform: scale(1);
                 opacity: 1;
             }
@@ -77,7 +76,6 @@
             color: #a78bfa;
         }
 
-        /* Progress bar */
         .loader-progress {
             width: 160px;
             height: 2px;
@@ -96,17 +94,26 @@
         }
 
         @keyframes progress {
-            0% { width: 0%; }
-            20% { width: 20%; }
-            40% { width: 45%; }
-            60% { width: 70%; }
-            80% { width: 88%; }
-            100% { width: 100%; }
+            0% {
+                width: 0%;
+            }
+            20% {
+                width: 20%;
+            }
+            40% {
+                width: 45%;
+            }
+            60% {
+                width: 70%;
+            }
+            80% {
+                width: 88%;
+            }
+            100% {
+                width: 100%;
+            }
         }
 
-        /* ============================
-           SIDEBAR
-        ============================ */
         .sidebar {
             position: fixed;
             left: 0;
@@ -194,9 +201,6 @@
             color: #f87171;
         }
 
-        /* ============================
-           MAIN CONTENT
-        ============================ */
         .main-content {
             margin-left: 240px;
             padding: 32px 40px 40px 40px;
@@ -222,7 +226,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
         .top-bar .greeting h1 {
@@ -267,9 +271,146 @@
             font-weight: 500;
         }
 
-        /* ============================
-           STATS CARDS
-        ============================ */
+        .filter-section {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            padding: 4px 10px 4px 12px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group:focus-within {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.04);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.06);
+        }
+
+        .filter-group .label {
+            font-size: 10px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group .icon {
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+        }
+
+        .filter-group input[type="date"] {
+            background: transparent;
+            border: none;
+            padding: 8px 4px;
+            color: #fff;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            width: 130px;
+        }
+
+        .filter-group input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            opacity: 0.4;
+            cursor: pointer;
+        }
+
+        .filter-group input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 0.8;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-btn.apply {
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            color: #fff;
+        }
+
+        .filter-btn.apply:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .filter-btn.reset {
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .filter-btn.reset:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .filter-info {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+            margin-left: auto;
+        }
+
+        .filter-info span {
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        .quick-filters {
+            display: flex;
+            gap: 4px;
+        }
+
+        .quick-filter {
+            padding: 4px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 11px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-filter:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #a78bfa;
+        }
+
+        .quick-filter.active {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: rgba(99, 102, 241, 0.2);
+            color: #a78bfa;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -311,8 +452,13 @@
             gap: 4px;
         }
 
-        .stat-card .change.positive { color: #34d399; }
-        .stat-card .change.negative { color: #f87171; }
+        .stat-card .change.positive {
+            color: #34d399;
+        }
+
+        .stat-card .change.negative {
+            color: #f87171;
+        }
 
         .stat-card .icon {
             float: right;
@@ -327,7 +473,8 @@
             gap: 24px;
         }
 
-        .chart-box, .recent-box {
+        .chart-box,
+        .recent-box {
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.04);
@@ -335,7 +482,8 @@
             padding: 24px;
         }
 
-        .chart-box .title, .recent-box .title {
+        .chart-box .title,
+        .recent-box .title {
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 16px;
@@ -399,10 +547,25 @@
             font-size: 14px;
         }
 
-        .transaction .left .icon-circle.income { background: rgba(52, 211, 153, 0.1); color: #34d399; }
-        .transaction .left .icon-circle.expense { background: rgba(248, 113, 113, 0.1); color: #f87171; }
-        .transaction .left .icon-circle.food { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
-        .transaction .left .icon-circle.bills { background: rgba(99, 102, 241, 0.1); color: #a78bfa; }
+        .transaction .left .icon-circle.income {
+            background: rgba(52, 211, 153, 0.1);
+            color: #34d399;
+        }
+
+        .transaction .left .icon-circle.expense {
+            background: rgba(248, 113, 113, 0.1);
+            color: #f87171;
+        }
+
+        .transaction .left .icon-circle.food {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+        }
+
+        .transaction .left .icon-circle.bills {
+            background: rgba(99, 102, 241, 0.1);
+            color: #a78bfa;
+        }
 
         .transaction .left .info .title {
             font-size: 14px;
@@ -419,8 +582,13 @@
             font-size: 14px;
         }
 
-        .transaction .amount.positive { color: #34d399; }
-        .transaction .amount.negative { color: #f87171; }
+        .transaction .amount.positive {
+            color: #34d399;
+        }
+
+        .transaction .amount.negative {
+            color: #f87171;
+        }
 
         .fab {
             position: fixed;
@@ -452,15 +620,19 @@
         }
 
         .skeleton {
-            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 75%);
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
             border-radius: 8px;
         }
 
         @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
         }
 
         .skeleton-text {
@@ -529,6 +701,9 @@
             .bottom-grid {
                 grid-template-columns: 1fr;
             }
+            .quick-filters {
+                display: none;
+            }
         }
 
         @media (max-width: 768px) {
@@ -547,14 +722,27 @@
                 align-items: flex-start;
                 gap: 12px;
             }
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-group {
+                width: 100%;
+            }
+            .filter-group input[type="date"] {
+                width: 100%;
+            }
+            .filter-info {
+                margin-left: 0;
+                text-align: center;
+            }
         }
     </style>
 </head>
+
 <body>
 
-    <!-- ============================
-    LOADING OVERLAY - Minimal
-    ============================ -->
+    <!-- Loading Overlay -->
     <div id="loadingOverlay">
         <div class="loader-pulse"></div>
         <div class="loader-text">Loading <span>Dashboard</span></div>
@@ -563,9 +751,7 @@
         </div>
     </div>
 
-    <!-- ============================
-    SIDEBAR
-    ============================ -->
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">
             <div class="icon"><i class="fas fa-wallet"></i></div>
@@ -580,9 +766,7 @@
         </ul>
     </div>
 
-    <!-- ============================
-    MAIN CONTENT
-    ============================ -->
+    <!-- Main Content -->
     <div class="main-content">
 
         <div class="top-bar">
@@ -593,6 +777,38 @@
             <div class="user">
                 <span class="name" id="userNameTop">User</span>
                 <div class="avatar" id="userAvatar">U</div>
+            </div>
+        </div>
+
+        <!-- Date Filter -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span class="label">From</span>
+                    <input type="date" id="startDate" />
+                </div>
+                <div class="filter-group">
+                    <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span class="label">To</span>
+                    <input type="date" id="endDate" />
+                </div>
+                <button class="filter-btn apply" onclick="applyFilter()">
+                    <i class="fas fa-filter"></i> Apply
+                </button>
+                <button class="filter-btn reset" onclick="resetFilter()">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+                <div class="quick-filters">
+                    <button class="quick-filter" onclick="setQuickFilter(7)">7D</button>
+                    <button class="quick-filter" onclick="setQuickFilter(30)">30D</button>
+                    <button class="quick-filter" onclick="setQuickFilter(90)">90D</button>
+                    <button class="quick-filter" onclick="setQuickFilter(180)">6M</button>
+                    <button class="quick-filter" onclick="setQuickFilter(365)">1Y</button>
+                </div>
+                <div class="filter-info">
+                    Showing: <span id="dateRangeText">Current Month</span>
+                </div>
             </div>
         </div>
 
@@ -608,34 +824,31 @@
                     <div class="skeleton skeleton-change"></div>
                 </div>
             </div>
+
             <div class="stat-card">
                 <div class="icon"><i class="fas fa-trend-up"></i></div>
                 <div class="label">This Month</div>
-                <div class="value" id="thisMonth">
-                    <div class="skeleton skeleton-text"></div>
-                </div>
-                <div class="change" id="monthChange">
-                    <div class="skeleton skeleton-change"></div>
+                <div class="value" id="thisMonth">₹0</div>
+                <div class="change positive" id="monthChange">
+                    <i class="fas fa-arrow-up"></i> Current month
                 </div>
             </div>
+
             <div class="stat-card">
                 <div class="icon"><i class="fas fa-wallet"></i></div>
                 <div class="label">Remaining Budget</div>
-                <div class="value" id="remainingBudget">
-                    <div class="skeleton skeleton-text"></div>
-                </div>
-                <div class="change" id="budgetChange">
-                    <div class="skeleton skeleton-change"></div>
+                <div class="value" id="remainingBudget">₹0</div>
+                <div class="change positive" id="budgetChange">
+                    <i class="fas fa-arrow-up"></i> Budget remaining
                 </div>
             </div>
+
             <div class="stat-card">
                 <div class="icon"><i class="fas fa-calendar"></i></div>
                 <div class="label">Transactions</div>
-                <div class="value" id="transactions">
-                    <div class="skeleton skeleton-text"></div>
-                </div>
-                <div class="change" id="transactionChange">
-                    <div class="skeleton skeleton-change"></div>
+                <div class="value" id="transactions">0</div>
+                <div class="change positive" id="transactionChange">
+                    <i class="fas fa-arrow-up"></i> Total transactions
                 </div>
             </div>
         </div>
@@ -714,192 +927,312 @@
         <i class="fas fa-plus"></i>
     </button>
 
-    <script>
-        // ============================
-        // 1. Show Loading Overlay
-        // ============================
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const minLoadingTime = 2000;
+<script>
+    // ============================
+    // 1. LOADING OVERLAY
+    // ============================
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const minLoadingTime = 2000;
+    let startTime = Date.now();
 
-        // ============================
-        // 2. Get userId
-        // ============================
-        const userId = localStorage.getItem('userId');
-        const userName = localStorage.getItem('userName');
+    function hideLoading() {
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, minLoadingTime - elapsed);
+        setTimeout(() => {
+            loadingOverlay.classList.add('hidden');
+        }, remaining);
+    }
 
-        if (!userId) {
-            alert('Please login first!');
-            window.location.href = '/login';
-        }
+    // ============================
+    // 2. GET USER ID
+    // ============================
+    const userId = localStorage.getItem('userId');
+    const userName = localStorage.getItem('userName');
 
-        document.getElementById('userName').textContent = userName || 'User';
-        document.getElementById('userNameTop').textContent = userName || 'User';
-        document.getElementById('userAvatar').textContent = (userName || 'U')[0].toUpperCase();
+    if (!userId) {
+        alert('Please login first!');
+        window.location.href = '/login';
+    }
 
-        // ============================
-        // 3. Load Data
-        // ============================
-        async function loadStats() {
-            try {
-                const response = await fetch('/api/dashboard/stats', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: parseInt(userId) })
-                });
+    document.getElementById('userName').textContent = userName || 'User';
+    document.getElementById('userNameTop').textContent = userName || 'User';
+    document.getElementById('userAvatar').textContent = (userName || 'U')[0].toUpperCase();
 
-                const result = await response.json();
+    // ============================
+    // 3. HELPER FUNCTION - LOCAL DATE FORMAT
+    // ============================
+    function formatLocalDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
 
-                if (result.status === 'success') {
-                    const data = result.data;
+    // ============================
+    // 4. DATE FILTER - DEFAULT CURRENT MONTH (1st to Today)
+    // ============================
+    let currentStartDate = '';
+    let currentEndDate = '';
 
-                    document.getElementById('totalExpenses').innerHTML = '₹' + data.totalExpenses;
-                    document.getElementById('thisMonth').innerHTML = '₹' + data.thisMonth;
-                    document.getElementById('remainingBudget').innerHTML = '₹' + data.remainingBudget;
-                    document.getElementById('transactions').innerHTML = data.transactions;
+    function setDefaultDates() {
+        const today = new Date();
+        // ✅ Get current month's first day
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
 
-                    if (data.monthlyChangeType === 'positive') {
-                        document.getElementById('totalChange').className = 'change positive';
-                        document.getElementById('totalChange').innerHTML = '<i class="fas fa-arrow-up"></i> ' + data.monthlyChange + '% from last month';
-                    } else {
-                        document.getElementById('totalChange').className = 'change negative';
-                        document.getElementById('totalChange').innerHTML = '<i class="fas fa-arrow-down"></i> ' + Math.abs(data.monthlyChange) + '% from last month';
-                    }
+        document.getElementById('startDate').value = formatLocalDate(firstDay);
+        document.getElementById('endDate').value = formatLocalDate(today);
 
-                    document.getElementById('monthChange').className = 'change positive';
-                    document.getElementById('monthChange').innerHTML = '<i class="fas fa-arrow-up"></i> Current month';
-                    document.getElementById('budgetChange').className = 'change positive';
-                    document.getElementById('budgetChange').innerHTML = '<i class="fas fa-arrow-up"></i> Budget remaining';
-                    document.getElementById('transactionChange').className = 'change positive';
-                    document.getElementById('transactionChange').innerHTML = '<i class="fas fa-arrow-up"></i> Total transactions';
+        currentStartDate = document.getElementById('startDate').value;
+        currentEndDate = document.getElementById('endDate').value;
 
-                    hideLoading();
+        const start = firstDay.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const end = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        document.getElementById('dateRangeText').textContent = start + ' — ' + end;
+
+        document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
+    }
+
+    // ============================
+    // 5. QUICK FILTER
+    // ============================
+    function setQuickFilter(days) {
+        const today = new Date();
+        const pastDate = new Date(today);
+        pastDate.setDate(today.getDate() - days);
+
+        document.getElementById('startDate').value = formatLocalDate(pastDate);
+        document.getElementById('endDate').value = formatLocalDate(today);
+
+        currentStartDate = document.getElementById('startDate').value;
+        currentEndDate = document.getElementById('endDate').value;
+
+        const start = pastDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const end = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        document.getElementById('dateRangeText').textContent = start + ' — ' + end;
+
+        document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
+        event.target.classList.add('active');
+
+        document.getElementById('totalExpenses').innerHTML = '<div class="skeleton skeleton-text"></div>';
+        document.getElementById('totalChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+        document.getElementById('chartContainer').innerHTML = '<div class="skeleton skeleton-chart"></div>';
+
+        loadAllData(currentStartDate, currentEndDate);
+    }
+
+    setDefaultDates();
+
+    // ============================
+    // 6. LOAD FUNCTIONS
+    // ============================
+    function loadAllData(startDate, endDate) {
+        loadStats(startDate, endDate);
+        loadChart(startDate, endDate);
+        loadRecentTransactions(startDate, endDate);
+    }
+
+    // ============================
+    // 7. API CALLS
+    // ============================
+    async function loadStats(startDate, endDate) {
+        try {
+            const body = { user_id: parseInt(userId) };
+            if (startDate) body.start_date = startDate;
+            if (endDate) body.end_date = endDate;
+
+            const response = await fetch('/api/dashboard/stats', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                const data = result.data;
+
+                document.getElementById('totalExpenses').innerHTML = '₹' + data.totalExpenses;
+                if (data.monthlyChangeType === 'positive') {
+                    document.getElementById('totalChange').className = 'change negative';
+                    document.getElementById('totalChange').innerHTML = '<i class="fas fa-arrow-up"></i> ' + data.monthlyChange + '% from last month';
+                } else {
+                    document.getElementById('totalChange').className = 'change positive';
+                    document.getElementById('totalChange').innerHTML = '<i class="fas fa-arrow-down"></i> ' + Math.abs(data.monthlyChange) + '% from last month';
                 }
-            } catch (error) {
-                console.error('Error loading stats:', error);
+
+                document.getElementById('thisMonth').innerHTML = '₹' + data.thisMonth;
+                document.getElementById('monthChange').innerHTML = '<i class="fas fa-arrow-up"></i> Current month';
+
+                document.getElementById('remainingBudget').innerHTML = '₹' + data.remainingBudget;
+                document.getElementById('budgetChange').innerHTML = '<i class="fas fa-arrow-up"></i> Budget remaining';
+
+                document.getElementById('transactions').innerHTML = data.transactions;
+                document.getElementById('transactionChange').innerHTML = '<i class="fas fa-arrow-up"></i> Total transactions';
+
                 hideLoading();
             }
+        } catch (error) {
+            console.error('Error loading stats:', error);
+            hideLoading();
         }
+    }
 
-        async function loadChart() {
-            try {
-                const response = await fetch('/api/dashboard/chart', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: parseInt(userId) })
-                });
+    async function loadChart(startDate, endDate) {
+        try {
+            const body = { user_id: parseInt(userId) };
+            if (startDate) body.start_date = startDate;
+            if (endDate) body.end_date = endDate;
 
-                const result = await response.json();
-                const container = document.getElementById('chartContainer');
+            const response = await fetch('/api/dashboard/chart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
 
-                if (result.status === 'success') {
-                    const chartData = result.data;
-                    if (chartData.labels && chartData.labels.length > 0) {
-                        let html = '<div class="bar-chart">';
-                        const maxValue = Math.max(...chartData.data, 1);
-                        for (let i = 0; i < chartData.labels.length; i++) {
-                            const height = (chartData.data[i] / maxValue) * 150;
-                            html += `
-                                <div class="bar-item">
-                                    <div class="bar" style="height: ${Math.max(height, 10)}px;"></div>
-                                    <span class="bar-label">${chartData.labels[i]}</span>
-                                </div>
-                            `;
-                        }
-                        html += '</div>';
-                        container.innerHTML = html;
-                    } else {
-                        container.innerHTML = '<div class="loading-text">No data available</div>';
+            const result = await response.json();
+            const container = document.getElementById('chartContainer');
+
+            if (result.status === 'success') {
+                const data = result.data;
+                if (data.labels && data.labels.length > 0) {
+                    let html = '<div class="bar-chart">';
+                    const maxValue = Math.max(...data.data, 1);
+                    for (let i = 0; i < data.labels.length; i++) {
+                        const height = (data.data[i] / maxValue) * 150;
+                        html += `
+                            <div class="bar-item">
+                                <div class="bar" style="height: ${Math.max(height, 10)}px;"></div>
+                                <span class="bar-label">${data.labels[i]}</span>
+                            </div>
+                        `;
                     }
+                    html += '</div>';
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<div class="loading-text">No data available</div>';
                 }
-            } catch (error) {
-                console.error('Error loading chart:', error);
             }
+        } catch (error) {
+            console.error('Error loading chart:', error);
         }
+    }
 
-        async function loadRecentTransactions() {
-            try {
-                const response = await fetch('/api/dashboard/recent', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_id: parseInt(userId) })
-                });
+    async function loadRecentTransactions(startDate, endDate) {
+        try {
+            const body = { user_id: parseInt(userId) };
+            if (startDate) body.start_date = startDate;
+            if (endDate) body.end_date = endDate;
 
-                const result = await response.json();
-                const container = document.getElementById('recentTransactions');
+            const response = await fetch('/api/dashboard/recent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
 
-                if (result.status === 'success') {
-                    const transactions = result.data;
-                    if (transactions && transactions.length > 0) {
-                        let html = '';
-                        transactions.forEach(t => {
-                            const amountClass = t.type === 'income' ? 'positive' : 'negative';
-                            const sign = t.type === 'income' ? '+' : '-';
-                            html += `
-                                <div class="transaction">
-                                    <div class="left">
-                                        <div class="icon-circle ${t.icon}">
-                                            <i class="fas ${getIconClass(t.icon)}"></i>
-                                        </div>
-                                        <div class="info">
-                                            <div class="title">${t.description}</div>
-                                            <div class="sub">${t.date}</div>
-                                        </div>
+            const result = await response.json();
+            const container = document.getElementById('recentTransactions');
+
+            if (result.status === 'success') {
+                const transactions = result.data;
+                if (transactions && transactions.length > 0) {
+                    let html = '';
+                    transactions.forEach(t => {
+                        const amountClass = t.type === 'income' ? 'positive' : 'negative';
+                        const sign = t.type === 'income' ? '+' : '-';
+                        html += `
+                            <div class="transaction">
+                                <div class="left">
+                                    <div class="icon-circle ${t.icon}">
+                                        <i class="fas ${getIconClass(t.icon)}"></i>
                                     </div>
-                                    <div class="amount ${amountClass}">${sign}₹${t.amount}</div>
+                                    <div class="info">
+                                        <div class="title">${t.description}</div>
+                                        <div class="sub">${t.date}</div>
+                                    </div>
                                 </div>
-                            `;
-                        });
-                        container.innerHTML = html;
-                    } else {
-                        container.innerHTML = '<div class="loading-text">No transactions</div>';
-                    }
+                                <div class="amount ${amountClass}">${sign}₹${t.amount}</div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<div class="loading-text">No transactions</div>';
                 }
-            } catch (error) {
-                console.error('Error loading transactions:', error);
             }
+        } catch (error) {
+            console.error('Error loading transactions:', error);
+        }
+    }
+
+    function getIconClass(icon) {
+        const map = {
+            'food': 'fa-utensils',
+            'bills': 'fa-bolt',
+            'expense': 'fa-shopping-bag',
+            'income': 'fa-arrow-right',
+            'shopping': 'fa-shopping-bag'
+        };
+        return map[icon] || 'fa-circle';
+    }
+
+    // ============================
+    // 8. APPLY / RESET FILTER
+    // ============================
+    function applyFilter() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (!startDate || !endDate) {
+            alert('Please select both dates');
+            return;
+        }
+        if (startDate > endDate) {
+            alert('Start date cannot be after end date');
+            return;
         }
 
-        function getIconClass(icon) {
-            const map = {
-                'food': 'fa-utensils',
-                'bills': 'fa-bolt',
-                'expense': 'fa-shopping-bag',
-                'income': 'fa-arrow-right',
-                'shopping': 'fa-shopping-bag'
-            };
-            return map[icon] || 'fa-circle';
-        }
+        currentStartDate = startDate;
+        currentEndDate = endDate;
 
-        // ============================
-        // 4. Hide Loading
-        // ============================
-        let startTime = Date.now();
+        document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
 
-        function hideLoading() {
-            const elapsed = Date.now() - startTime;
-            const remaining = Math.max(0, minLoadingTime - elapsed);
+        const start = new Date(startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const end = new Date(endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        document.getElementById('dateRangeText').textContent = start + ' — ' + end;
 
-            setTimeout(() => {
-                loadingOverlay.classList.add('hidden');
-            }, remaining);
-        }
+        document.getElementById('totalExpenses').innerHTML = '<div class="skeleton skeleton-text"></div>';
+        document.getElementById('totalChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+        document.getElementById('chartContainer').innerHTML = '<div class="skeleton skeleton-chart"></div>';
 
-        // ============================
-        // 5. Logout
-        // ============================
-        function logout() {
-            localStorage.removeItem('userId');
-            localStorage.removeItem('userName');
-            window.location.href = '/login';
-        }
+        loadAllData(startDate, endDate);
+    }
 
-        // ============================
-        // 6. Load Everything
-        // ============================
-        loadStats();
-        loadChart();
-        loadRecentTransactions();
-    </script>
+    function resetFilter() {
+        setDefaultDates();
+        document.querySelectorAll('.quick-filter').forEach(el => el.classList.remove('active'));
+
+        document.getElementById('totalExpenses').innerHTML = '<div class="skeleton skeleton-text"></div>';
+        document.getElementById('totalChange').innerHTML = '<div class="skeleton skeleton-change"></div>';
+        document.getElementById('chartContainer').innerHTML = '<div class="skeleton skeleton-chart"></div>';
+
+        loadAllData(currentStartDate, currentEndDate);
+    }
+
+    // ============================
+    // 9. LOGOUT
+    // ============================
+    function logout() {
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        window.location.href = '/login';
+    }
+
+    // ============================
+    // 10. INITIAL LOAD
+    // ============================
+    loadAllData(currentStartDate, currentEndDate);
+</script>
 
 </body>
+
 </html>
