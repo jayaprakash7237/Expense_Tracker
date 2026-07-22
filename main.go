@@ -36,7 +36,8 @@ var db *sql.DB
 
 func main() {
 	// Database connection
-	connStr := "postgres://postgres:password123@localhost:5433/expense_tracker?sslmode=disable"
+	// connStr := "postgres://postgres:password123@localhost:5433/expense_tracker?sslmode=disable"
+	connStr := "postgres://neondb_owner:npg_5im0IbKDNvES@ep-silent-star-aopycvrn.c-2.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require"
 	var err error
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
