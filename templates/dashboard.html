@@ -2,13 +2,22 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
+    <!-- <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>💰 Expense Tracker - Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" /> -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>" />
+
+    <title>Expense Tracker - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
         * {
             margin: 0;
@@ -775,27 +784,25 @@
             <div class="icon"><i class="fas fa-wallet"></i></div>
             <h2>Expense<span>Tracker</span></h2>
         </div>
-<ul class="nav">
-    <li class="active"><a href="/dashboard"
-            style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%;">
-            <i class="fas fa-th-large"></i> Dashboard
-        </a></li>
-    <li><a href="#"
-            onclick="event.preventDefault();"
-            style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%; cursor: default;">
-            <i class="fas fa-list"></i> Expenses
-        </a></li>
-    <li><a href="/add-expense"
-            style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%;">
-            <i class="fas fa-plus-circle"></i> Add Expense
-        </a></li>
-    <li><a href="#"
-            onclick="event.preventDefault();"
-            style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%; cursor: default;">
-            <i class="fas fa-chart-pie"></i> Reports
-        </a></li>
-    <li class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</li>
-</ul>
+        <ul class="nav">
+            <li class="active"><a href="/dashboard"
+                    style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%;">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a></li>
+            <li><a href="/expenses"
+                    style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%;">
+                    <i class="fas fa-list"></i> Expenses
+                </a></li>
+            <li><a href="/add-expense"
+                    style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%;">
+                    <i class="fas fa-plus-circle"></i> Add Expense
+                </a></li>
+            <li><a href="#" onclick="event.preventDefault();"
+                    style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%; cursor: default;">
+                    <i class="fas fa-chart-pie"></i> Reports
+                </a></li>
+            <li class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</li>
+        </ul>
     </div>
 
     <!-- Main Content -->

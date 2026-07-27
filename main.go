@@ -64,14 +64,26 @@ func main() {
 	http.HandleFunc("/login", serveLoginPage)
 	http.HandleFunc("/dashboard", serveDashboardPage)
 	http.HandleFunc("/add-expense", serveAddExpensePage)
+	http.HandleFunc("/expenses", serveExpensesPage)
 
 	// API Routes
 	http.HandleFunc("/api/register", handleRegister)
 	http.HandleFunc("/api/login", handleLogin)
 	http.HandleFunc("/api/expense/add", handleAddExpense)
+	http.HandleFunc("/api/expenses/list", handleExpensesList)
 
 	fmt.Println("Server running on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+// Serve Expenses Page
+func serveExpensesPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/expenses.html")
+	if err != nil {
+		http.Error(w, "Page not found", http.StatusNotFound)
+		return
+	}
+	tmpl.Execute(w, nil)
 }
 
 // Serve Add Expense Page
@@ -575,5 +587,69 @@ func handleAddExpense(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(APIResponse{
 		Status:  "success",
 		Message: "Expense added successfully! 🎉",
+	})
+}
+
+func handleExpensesList(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		UserID    int    `json:"user_id"`
+		StartDate string `json:"start_date,omitempty"`
+		EndDate   string `json:"end_date,omitempty"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil || req.UserID == 0 {
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "user_id required"})
+		return
+	}
+
+	query := `
+        SELECT id, amount, category, description, date 
+        FROM expenses 
+        WHERE user_id = $1
+    `
+	args := []interface{}{req.UserID}
+	argIndex := 2
+
+	if req.StartDate != "" && req.EndDate != "" {
+		query += fmt.Sprintf(" AND date >= $%d AND date <= $%d", argIndex, argIndex+1)
+		args = append(args, req.StartDate, req.EndDate)
+	}
+
+	query += " ORDER BY date DESC"
+
+	rows, err := db.Query(query, args...)
+	if err != nil {
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Database error"})
+		return
+	}
+	defer rows.Close()
+
+	var expenses []map[string]interface{}
+	for rows.Next() {
+		var id int
+		var amount float64
+		var category, description string
+		var date time.Time
+		err := rows.Scan(&id, &amount, &category, &description, &date)
+		if err != nil {
+			continue
+		}
+		expenses = append(expenses, map[string]interface{}{
+			"id":          id,
+			"amount":      amount,
+			"category":    category,
+			"description": description,
+			"date":        date.Format("2006-01-02"),
+		})
+	}
+
+	json.NewEncoder(w).Encode(APIResponse{
+		Status: "success",
+		Data:   expenses,
 	})
 }

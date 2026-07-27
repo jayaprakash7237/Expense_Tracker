@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>💰 Expense Tracker - Add Expense</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>" />
+    <title>Expense Tracker - Add Expense</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
@@ -472,9 +473,7 @@
         </div>
         <ul class="nav">
             <li><a href="/dashboard"><i class="fas fa-th-large"></i> Dashboard</a></li>
-            <li><a href="javascript:void(0)" onclick="return false;" style="cursor: default; opacity: 0.6;">
-                <i class="fas fa-list"></i> Expenses
-            </a></li>
+            <li><a href="/expenses"><i class="fas fa-list"></i> Expenses</a></li>
             <li class="active"><a href="/add-expense"><i class="fas fa-plus-circle"></i> Add Expense</a></li>
             <li><a href="javascript:void(0)" onclick="return false;" style="cursor: default; opacity: 0.6;">
                 <i class="fas fa-chart-pie"></i> Reports
@@ -649,7 +648,6 @@
                     form.reset();
                     document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
                     
-                    // ✅ Stay on same page - NO redirect
                     setTimeout(() => {
                         successMsg.classList.remove('show');
                         submitBtn.classList.remove('loading');
