@@ -63,13 +63,25 @@ func main() {
 	http.HandleFunc("/register", serveRegisterPage)
 	http.HandleFunc("/login", serveLoginPage)
 	http.HandleFunc("/dashboard", serveDashboardPage)
+	http.HandleFunc("/add-expense", serveAddExpensePage)
 
 	// API Routes
 	http.HandleFunc("/api/register", handleRegister)
 	http.HandleFunc("/api/login", handleLogin)
+	http.HandleFunc("/api/expense/add", handleAddExpense)
 
 	fmt.Println("Server running on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+// Serve Add Expense Page
+func serveAddExpensePage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/add_expense.html")
+	if err != nil {
+		http.Error(w, "Page not found", http.StatusNotFound)
+		return
+	}
+	tmpl.Execute(w, nil)
 }
 
 // Serve Login Page
@@ -524,4 +536,44 @@ type Transaction struct {
 	Date        string  `json:"date"`
 	Type        string  `json:"type"` // "expense" or "income"
 	Icon        string  `json:"icon"` // "food", "bills", "expense", "income"
+}
+
+func handleAddExpense(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		UserID      int     `json:"user_id"`
+		Amount      float64 `json:"amount"`
+		Category    string  `json:"category"`
+		Description string  `json:"description"`
+		Date        string  `json:"date"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid request"})
+		return
+	}
+
+	// Validate
+	if req.UserID == 0 || req.Amount <= 0 || req.Category == "" || req.Description == "" || req.Date == "" {
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "All fields are required"})
+		return
+	}
+
+	// Insert into database
+	query := `INSERT INTO expenses (user_id, amount, category, description, date) VALUES ($1, $2, $3, $4, $5)`
+	_, err = db.Exec(query, req.UserID, req.Amount, req.Category, req.Description, req.Date)
+	if err != nil {
+		log.Printf(" DB error: %v", err)
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Failed to add expense"})
+		return
+	}
+
+	json.NewEncoder(w).Encode(APIResponse{
+		Status:  "success",
+		Message: "Expense added successfully! 🎉",
+	})
 }

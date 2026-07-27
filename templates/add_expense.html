@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💰 Expense Tracker - Add Expense</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0c0e1a;
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 28px 20px;
+            z-index: 100;
+        }
+
+        .sidebar .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar .logo .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .sidebar .logo h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .sidebar .logo h2 span {
+            font-weight: 300;
+            opacity: 0.7;
+        }
+
+        .sidebar .nav {
+            list-style: none;
+        }
+
+        .sidebar .nav li {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar .nav li a {
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .sidebar .nav li i {
+            width: 20px;
+            font-size: 16px;
+        }
+
+        .sidebar .nav li:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .sidebar .nav li.active {
+            background: rgba(99, 102, 241, 0.12);
+            color: #a78bfa;
+            border: 1px solid rgba(99, 102, 241, 0.08);
+        }
+
+        .sidebar .nav li.logout {
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 20px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar .nav li.logout:hover {
+            color: #f87171;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 240px;
+            padding: 32px 40px 40px 40px;
+            min-height: 100vh;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+            animation-delay: 0.4s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .top-bar .greeting h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .top-bar .greeting h1 span {
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .top-bar .greeting p {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .top-bar .user {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .top-bar .user .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #a78bfa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .top-bar .user .name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 20px;
+            padding: 32px 36px;
+            max-width: 600px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .form-card:hover {
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .form-card .form-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-card .form-title i {
+            color: #a78bfa;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .form-group label .required {
+            color: #f87171;
+            margin-left: 2px;
+        }
+
+        .input-wrap {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .input-wrap:focus-within {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.04);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.06);
+        }
+
+        .input-wrap .icon {
+            padding: 0 0 0 14px;
+            color: rgba(255, 255, 255, 0.08);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .input-wrap:focus-within .icon {
+            color: #a78bfa;
+        }
+
+        .input-wrap input,
+        .input-wrap select,
+        .input-wrap textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 400;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-wrap input::placeholder,
+        .input-wrap textarea::placeholder {
+            color: rgba(255, 255, 255, 0.08);
+            font-weight: 300;
+        }
+
+        .input-wrap select option {
+            background: #1a1a3e;
+            color: #fff;
+        }
+
+        .input-wrap textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Amount input with currency */
+        .amount-wrap {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .amount-wrap:focus-within {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.04);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.06);
+        }
+
+        .amount-wrap .currency {
+            padding: 0 0 0 14px;
+            color: rgba(255, 255, 255, 0.15);
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .amount-wrap .icon {
+            padding: 0 0 0 10px;
+            color: rgba(255, 255, 255, 0.08);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .amount-wrap:focus-within .icon {
+            color: #a78bfa;
+        }
+
+        .amount-wrap input {
+            width: 100%;
+            padding: 12px 14px;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 400;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .amount-wrap input::placeholder {
+            color: rgba(255, 255, 255, 0.08);
+            font-weight: 300;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #6366f1, #a78bfa, #ec4899);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 6px;
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.97);
+        }
+
+        .submit-btn i {
+            margin-right: 10px;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .submit-btn .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .submit-btn.loading .btn-text {
+            display: none;
+        }
+
+        .submit-btn.loading .spinner {
+            display: block;
+        }
+
+        /* Messages */
+        .msg {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 14px;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .msg i {
+            font-size: 16px;
+        }
+
+        .msg.show {
+            display: flex;
+        }
+
+        .msg-success {
+            background: rgba(52, 211, 153, 0.06);
+            border: 1px solid rgba(52, 211, 153, 0.08);
+            color: #34d399;
+        }
+
+        .msg-error {
+            background: rgba(248, 113, 113, 0.06);
+            border: 1px solid rgba(248, 113, 113, 0.08);
+            color: #f87171;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .form-card {
+                padding: 24px 18px;
+            }
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <div class="icon"><i class="fas fa-wallet"></i></div>
+            <h2>Expense<span>Tracker</span></h2>
+        </div>
+        <ul class="nav">
+            <li><a href="/dashboard"><i class="fas fa-th-large"></i> Dashboard</a></li>
+            <li><a href="javascript:void(0)" onclick="return false;" style="cursor: default; opacity: 0.6;">
+                <i class="fas fa-list"></i> Expenses
+            </a></li>
+            <li class="active"><a href="/add-expense"><i class="fas fa-plus-circle"></i> Add Expense</a></li>
+            <li><a href="javascript:void(0)" onclick="return false;" style="cursor: default; opacity: 0.6;">
+                <i class="fas fa-chart-pie"></i> Reports
+            </a></li>
+            <li class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="greeting">
+                <h1>Add <span>Expense</span></h1>
+                <p>Record your daily expenses</p>
+            </div>
+            <div class="user">
+                <span class="name" id="userNameTop">User</span>
+                <div class="avatar" id="userAvatar">U</div>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+
+            <div class="form-title">
+                <i class="fas fa-pen"></i> Expense Details
+            </div>
+
+            <form id="expenseForm">
+
+                <!-- Amount -->
+                <div class="form-group">
+                    <label>Amount <span class="required">*</span></label>
+                    <div class="amount-wrap">
+                        <span class="currency">₹</span>
+                        <span class="icon"><i class="fas fa-coins"></i></span>
+                        <input type="number" id="amount" placeholder="0.00" step="0.01" min="0" required />
+                    </div>
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                    <label>Category <span class="required">*</span></label>
+                    <div class="input-wrap">
+                        <span class="icon"><i class="fas fa-tag"></i></span>
+                        <select id="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Food">🍔 Food</option>
+                            <option value="Bills">💡 Bills</option>
+                            <option value="Shopping">🛍️ Shopping</option>
+                            <option value="Transport">🚗 Transport</option>
+                            <option value="Entertainment">🎬 Entertainment</option>
+                            <option value="Health">🏥 Health</option>
+                            <option value="Education">📚 Education</option>
+                            <option value="Rent">🏠 Rent</option>
+                            <option value="Other">📌 Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label>Description <span class="required">*</span></label>
+                    <div class="input-wrap">
+                        <span class="icon"><i class="fas fa-align-left"></i></span>
+                        <textarea id="description" placeholder="What did you spend on?" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Date -->
+                <div class="form-group">
+                    <label>Date <span class="required">*</span></label>
+                    <div class="input-wrap">
+                        <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                        <input type="date" id="expenseDate" required />
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span class="btn-text"><i class="fas fa-save"></i> Add Expense</span>
+                    <div class="spinner"></div>
+                </button>
+
+                <div class="msg msg-success" id="successMsg">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="successText">Expense added successfully! 🎉</span>
+                </div>
+
+                <div class="msg msg-error" id="errorMsg">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorText">Something went wrong!</span>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+        // ============================
+        // 1. GET USER ID
+        // ============================
+        const userId = localStorage.getItem('userId');
+        const userName = localStorage.getItem('userName');
+
+        if (!userId) {
+            alert('Please login first!');
+            window.location.href = '/login';
+        }
+
+        document.getElementById('userNameTop').textContent = userName || 'User';
+        document.getElementById('userAvatar').textContent = (userName || 'U')[0].toUpperCase();
+
+        // ============================
+        // 2. SET DEFAULT DATE TO TODAY
+        // ============================
+        document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+
+        // ============================
+        // 3. FORM SUBMIT - Stay on same page
+        // ============================
+        const form = document.getElementById('expenseForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMsg = document.getElementById('successMsg');
+        const errorMsg = document.getElementById('errorMsg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            successMsg.classList.remove('show');
+            errorMsg.classList.remove('show');
+
+            const amount = document.getElementById('amount').value.trim();
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value.trim();
+            const expenseDate = document.getElementById('expenseDate').value;
+
+            if (!amount || !category || !description || !expenseDate) {
+                showError('All fields are required!');
+                return;
+            }
+
+            if (parseFloat(amount) <= 0) {
+                showError('Amount must be greater than 0!');
+                return;
+            }
+
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/expense/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: parseInt(userId),
+                        amount: parseFloat(amount),
+                        category: category,
+                        description: description,
+                        date: expenseDate
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    showSuccess(data.message);
+                    form.reset();
+                    document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+                    
+                    // ✅ Stay on same page - NO redirect
+                    setTimeout(() => {
+                        successMsg.classList.remove('show');
+                        submitBtn.classList.remove('loading');
+                        submitBtn.disabled = false;
+                    }, 2000);
+                } else {
+                    showError(data.message || 'Failed to add expense!');
+                    submitBtn.classList.remove('loading');
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                showError('Network error! Please try again.');
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        });
+
+        function showSuccess(msg) {
+            document.getElementById('successText').textContent = msg;
+            successMsg.classList.add('show');
+        }
+
+        function showError(msg) {
+            document.getElementById('errorText').textContent = msg;
+            errorMsg.classList.add('show');
+            setTimeout(() => errorMsg.classList.remove('show'), 5000);
+        }
+
+        // ============================
+        // 4. LOGOUT
+        // ============================
+        function logout() {
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userName');
+            window.location.href = '/login';
+        }
+    </script>
+
+</body>
+</html>

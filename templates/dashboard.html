@@ -52,11 +52,13 @@
         }
 
         @keyframes pulse {
+
             0%,
             100% {
                 transform: scale(1);
                 opacity: 1;
             }
+
             50% {
                 transform: scale(0.85);
                 opacity: 0.5;
@@ -97,18 +99,23 @@
             0% {
                 width: 0%;
             }
+
             20% {
                 width: 20%;
             }
+
             40% {
                 width: 45%;
             }
+
             60% {
                 width: 70%;
             }
+
             80% {
                 width: 88%;
             }
+
             100% {
                 width: 100%;
             }
@@ -216,6 +223,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -630,6 +638,7 @@
             0% {
                 background-position: -200% 0;
             }
+
             100% {
                 background-position: 200% 0;
             }
@@ -698,9 +707,11 @@
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+
             .bottom-grid {
                 grid-template-columns: 1fr;
             }
+
             .quick-filters {
                 display: none;
             }
@@ -710,28 +721,35 @@
             .sidebar {
                 display: none;
             }
+
             .main-content {
                 margin-left: 0;
                 padding: 20px;
             }
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
+
             .top-bar {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 12px;
             }
+
             .filter-row {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .filter-group {
                 width: 100%;
             }
+
             .filter-group input[type="date"] {
                 width: 100%;
             }
+
             .filter-info {
                 margin-left: 0;
                 text-align: center;
@@ -757,13 +775,27 @@
             <div class="icon"><i class="fas fa-wallet"></i></div>
             <h2>Expense<span>Tracker</span></h2>
         </div>
-        <ul class="nav">
-            <li class="active"><i class="fas fa-th-large"></i> Dashboard</li>
-            <li><i class="fas fa-list"></i> Expenses</li>
-            <li><i class="fas fa-plus-circle"></i> Add Expense</li>
-            <li><i class="fas fa-chart-pie"></i> Reports</li>
-            <li class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</li>
-        </ul>
+<ul class="nav">
+    <li class="active"><a href="/dashboard"
+            style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%;">
+            <i class="fas fa-th-large"></i> Dashboard
+        </a></li>
+    <li><a href="#"
+            onclick="event.preventDefault();"
+            style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%; cursor: default;">
+            <i class="fas fa-list"></i> Expenses
+        </a></li>
+    <li><a href="/add-expense"
+            style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%;">
+            <i class="fas fa-plus-circle"></i> Add Expense
+        </a></li>
+    <li><a href="#"
+            onclick="event.preventDefault();"
+            style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; width: 100%; cursor: default;">
+            <i class="fas fa-chart-pie"></i> Reports
+        </a></li>
+    <li class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</li>
+</ul>
     </div>
 
     <!-- Main Content -->
@@ -929,7 +961,7 @@
 
     </div>
 
-    <button class="fab" onclick="alert('Add Expense Coming Soon! 🚀')">
+    <button class="fab" onclick="window.location.href='/add-expense'">
         <i class="fas fa-plus"></i>
     </button>
 
