@@ -65,12 +65,14 @@ func main() {
 	http.HandleFunc("/dashboard", serveDashboardPage)
 	http.HandleFunc("/add-expense", serveAddExpensePage)
 	http.HandleFunc("/expenses", serveExpensesPage)
+	http.HandleFunc("/reports", serveReportsPage)
 
 	// API Routes
 	http.HandleFunc("/api/register", handleRegister)
 	http.HandleFunc("/api/login", handleLogin)
 	http.HandleFunc("/api/expense/add", handleAddExpense)
 	http.HandleFunc("/api/expenses/list", handleExpensesList)
+	http.HandleFunc("/api/reports/data", handleReportsData)
 
 	fmt.Println("Server running on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
@@ -89,6 +91,16 @@ func serveExpensesPage(w http.ResponseWriter, r *http.Request) {
 // Serve Add Expense Page
 func serveAddExpensePage(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("templates/add_expense.html")
+	if err != nil {
+		http.Error(w, "Page not found", http.StatusNotFound)
+		return
+	}
+	tmpl.Execute(w, nil)
+}
+
+// Serve Reports Page
+func serveReportsPage(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/reports.html")
 	if err != nil {
 		http.Error(w, "Page not found", http.StatusNotFound)
 		return
@@ -651,5 +663,123 @@ func handleExpensesList(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(APIResponse{
 		Status: "success",
 		Data:   expenses,
+	})
+}
+
+func handleReportsData(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		UserID    int    `json:"user_id"`
+		StartDate string `json:"start_date,omitempty"`
+		EndDate   string `json:"end_date,omitempty"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil || req.UserID == 0 {
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "user_id required"})
+		return
+	}
+
+	// Build WHERE clause
+	whereClause := "WHERE user_id = $1"
+	args := []interface{}{req.UserID}
+	argIndex := 2
+
+	if req.StartDate != "" && req.EndDate != "" {
+		whereClause += fmt.Sprintf(" AND date >= $%d AND date <= $%d", argIndex, argIndex+1)
+		args = append(args, req.StartDate, req.EndDate)
+	}
+
+	// 1. Category Spending
+	categoryQuery := fmt.Sprintf(`
+        SELECT category, SUM(amount) as total
+        FROM expenses
+        %s
+        GROUP BY category
+        ORDER BY total DESC
+    `, whereClause)
+
+	rows, err := db.Query(categoryQuery, args...)
+	if err != nil {
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Database error"})
+		return
+	}
+	defer rows.Close()
+
+	categorySpending := make(map[string]float64)
+	var totalExpenses float64
+	var topCategory string
+	var topAmount float64
+
+	for rows.Next() {
+		var category string
+		var total float64
+		rows.Scan(&category, &total)
+		categorySpending[category] = total
+		totalExpenses += total
+		if total > topAmount {
+			topAmount = total
+			topCategory = category
+		}
+	}
+
+	// 2. Monthly Spending
+	monthlyQuery := fmt.Sprintf(`
+        SELECT TO_CHAR(date, 'Mon') as month, SUM(amount) as total
+        FROM expenses
+        %s
+        GROUP BY TO_CHAR(date, 'Mon'), EXTRACT(MONTH FROM date)
+        ORDER BY EXTRACT(MONTH FROM date) ASC
+    `, whereClause)
+
+	monthlyRows, err := db.Query(monthlyQuery, args...)
+	if err != nil {
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Database error"})
+		return
+	}
+	defer monthlyRows.Close()
+
+	var monthlySpending []map[string]interface{}
+	for monthlyRows.Next() {
+		var month string
+		var total float64
+		monthlyRows.Scan(&month, &total)
+		monthlySpending = append(monthlySpending, map[string]interface{}{
+			"month": month,
+			"total": total,
+		})
+	}
+
+	// 3. Calculate Average Daily Spending
+	var days int
+	if req.StartDate != "" && req.EndDate != "" {
+		start, _ := time.Parse("2006-01-02", req.StartDate)
+		end, _ := time.Parse("2006-01-02", req.EndDate)
+		days = int(end.Sub(start).Hours()/24) + 1
+	} else {
+		days = 30
+	}
+
+	avgDaily := 0.0
+	if days > 0 {
+		avgDaily = totalExpenses / float64(days)
+	}
+
+	// 4. Response
+	response := map[string]interface{}{
+		"category_spending": categorySpending,
+		"monthly_spending":  monthlySpending,
+		"total_expenses":    totalExpenses,
+		"total_categories":  len(categorySpending),
+		"avg_daily":         avgDaily,
+		"top_category":      topCategory,
+	}
+
+	json.NewEncoder(w).Encode(APIResponse{
+		Status: "success",
+		Data:   response,
 	})
 }
